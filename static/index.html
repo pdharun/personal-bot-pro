@@ -81,6 +81,7 @@ width:26px;height:26px;animation:sp 1s linear infinite;margin:30px auto}
   <button data-v="market" class="on" onclick="show('market')">Market</button>
   <button data-v="chart" onclick="show('chart')">Chart</button>
   <button data-v="alerts" onclick="show('alerts')">Alerts &amp; Signals</button>
+  <button data-v="trade" onclick="show('trade')">Auto Trade</button>
   <button data-v="fb" onclick="show('fb')">Facebook Ads</button>
 </div>
 
@@ -168,6 +169,86 @@ width:26px;height:26px;animation:sp 1s linear infinite;margin:30px auto}
   <div class="card"><div class="logs" id="fblog" style="max-height:180px"></div></div>
 </div>
 
+<div id="trade" class="view hidden">
+  <div class="grid2">
+    <div class="card">
+      <div class="row spread" style="margin-bottom:8px">
+        <h3 style="font-size:15px">🤖 Auto Trading Engine</h3>
+        <span class="badge" id="tstate">STOPPED</span>
+      </div>
+      <div class="row" style="gap:8px;margin-bottom:10px">
+        <span class="badge" id="tmode">PAPER</span>
+        <span class="badge" id="tsym">—</span>
+        <span class="badge mut" id="tlast">last scan —</span>
+      </div>
+      <button id="tkill" class="red" onclick="tradeStop()"
+        style="width:100%;padding:14px;font-size:16px;font-weight:800">
+        ■ STOP NOW — সাথে সাথে থামাও</button>
+      <div class="grid2" style="margin-top:12px">
+        <div class="card small"><span class="mut">Equity</span><br><b id="teq" style="font-size:16px">$—</b></div>
+        <div class="card small"><span class="mut">Cash</span><br><b id="tcas" style="font-size:16px">$—</b></div>
+        <div class="card small"><span class="mut">Realized P&amp;L</span><br><b id="trpnl" style="font-size:16px">$—</b></div>
+        <div class="card small"><span class="mut">Unrealized</span><br><b id="tupnl" style="font-size:16px">$—</b></div>
+      </div>
+      <div class="small mut" id="twnote" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:12px">▶ Start Configuration</h3>
+      <div class="row" style="margin-bottom:10px">
+        <span class="small mut">Coins</span>
+        <input id="tsyms" value="BTC ETH SOL BNB" style="width:180px">
+      </div>
+      <div class="row" style="margin-bottom:10px">
+        <span class="small mut">Timeframe</span>
+        <select id="tint">
+          <option>1m</option><option selected>5m</option><option>15m</option>
+          <option>1h</option><option>4h</option><option>1d</option>
+        </select>
+        <span class="small mut">Scan every (s)</span>
+        <input id="tscan" type="number" value="60" style="width:70px">
+      </div>
+      <div class="row" style="margin-bottom:10px">
+        <span class="small mut">Trade size $</span>
+        <input id="tsize" type="number" value="10" style="width:80px">
+        <span class="small mut">SL %</span>
+        <input id="tsl" type="number" value="5" style="width:60px">
+        <span class="small mut">TP %</span>
+        <input id="ttp" type="number" value="12" style="width:60px">
+      </div>
+      <div class="row" style="margin-bottom:10px">
+        <span class="small mut">Mode</span>
+        <select id="tmode_sel" onchange="toggleMode()">
+          <option value="paper">PAPER (virtual)</option>
+          <option value="real">REAL trading</option>
+        </select>
+      </div>
+      <div id="trealwarn" class="hidden" style="background:#4a1a1f;color:#f6465d;border:1px solid #8a2a33;
+        border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:10px">
+        ⚠ REAL mode আসল Binance account-এ সত্যিকারের টাকার order দেবে!
+      </div>
+      <button class="acc" onclick="tradeStart()" style="width:100%;padding:11px;font-size:15px;font-weight:700">
+        ▶ START AUTO TRADE</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px;padding:0;overflow:auto;max-height:180px">
+    <div class="small mut" style="padding:8px 12px">Open Positions</div>
+    <table id="tpos"><thead><tr></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:12px;padding:0;overflow:auto;max-height:180px">
+    <div class="small mut" style="padding:8px 12px">Closed Trades</div>
+    <table id="ttr"><thead><tr></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="row spread" style="margin-bottom:6px">
+      <span class="small mut">Live Activity Log</span>
+      <span class="small mut">সবকিছু এখানে লাইভ দেখবে</span>
+    </div>
+    <div class="logs" id="tlog" style="height:230px"></div>
+  </div>
+</div>
+
 <script>
 const $=id=>document.getElementById(id);
 const api=async(path,opts)=>{
@@ -185,6 +266,7 @@ function show(v){document.querySelectorAll('.view').forEach(x=>x.classList.add('
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   if(v==='market')fetchMarket(false);
   if(v==='chart')loadChart();
+  if(v==='trade')tradeRefresh();
   if(v==='fb')fbCampaigns();
 }
 
@@ -424,10 +506,98 @@ function fbLog(d){
   el.scrollTop=el.scrollHeight;
 }
 
+/* ---------- AUTO TRADE ---------- */
+let TLAST=0;
+function toggleMode(){
+  const real=$('tmode_sel').value==='real';
+  $('trealwarn').classList.toggle('hidden',!real);
+}
+async function tradeStart(){
+  const mode=$('tmode_sel').value;
+  if(mode==='real'&&!confirm('⚠ REAL TRADING! তোমার আসল Binance টাকা দিয়ে order হবে। নিশ্চিত?')){
+    return;}
+  const body={mode,symbols:$('tsyms').value,interval:$('tint').value,
+    scan_every:parseFloat($('tscan').value)||60,
+    notional:parseFloat($('tsize').value)||10,
+    sl_percent:$('tsl').value||null,
+    tp_percent:$('ttp').value||null};
+  if(mode==='real')body.real_confirm='YES';
+  apiLog('starting…');
+  const d=await api('/trade/start',{method:'POST',
+    headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(d&&d.error){alert(d.error);apiLog('❌ '+d.error);return;}
+  TLAST=0;
+  tradeRefresh();
+}
+async function tradeStop(){
+  apiLog('stopping…');
+  await api('/trade/stop',{method:'POST'});
+  TLAST=0;
+  tradeRefresh();
+}
+async function tradeRefresh(){
+  const d=await api('/trade/status'); if(!d)return;
+  const run=d.state==='running';
+  $('tstate').textContent=run?'● RUNNING':'○ STOPPED';
+  $('tstate').className='badge '+(run?'fg-green':'fg-red');
+  $('tkill').disabled=!run;
+  $('tmode').textContent=d.mode.toUpperCase();
+  $('tmode').className='badge '+(d.mode==='real'?'fg-red':'fg-yellow');
+  $('tsym').textContent=(d.symbols||[]).join(' ');
+  $('tlast').textContent='last scan '+(d.last_scan?dtfmt(d.last_scan):'—');
+  $('teq').textContent='$'+fmt(d.equity);
+  $('tcas').textContent='$'+fmt(d.cash);
+  $('trpnl').textContent='$'+fmt(d.realized_pnl);
+  $('trpnl').className=(d.realized_pnl>=0?'up':'down');
+  $('tupnl').textContent='$'+fmt(d.unrealized_pnl);
+  $('tupnl').className=(d.unrealized_pnl>=0?'up':'down');
+  $('twnote').textContent=d.wallet_note+(d.mode==='real'&&d.real_balances.length?
+    ' · USDT balance $'+fmt((d.real_balances.find(b=>b.asset==='USDT')||{}).free):'');
+  // positions table
+  const ptb=$('tpos').tBodies[0];
+  ptb.innerHTML='<tr><td class="mut">Symbol</td><td class="mut">Qty</td><td class="mut">Entry</td>'+
+    '<td class="mut">Last</td><td class="mut">P&amp;L</td><td class="mut">Started</td></tr>';
+  (d.positions||[]).forEach(p=>ptb.insertAdjacentHTML('beforeend',
+    `<tr><td><b>${p.symbol}</b></td><td>${fmt(p.qty,6)}</td><td>$${fmt(p.entry)}</td>
+     <td>$${fmt(p.last)}</td><td class="${p.pnl>=0?'up':'down'}">$${fmt(p.pnl)} (${p.pnl_pct>0?'+':''}${p.pnl_pct}%)</td>
+     <td class="mut">${p.opened}</td></tr>`));
+  if(!d.positions.length)ptb.insertAdjacentHTML('beforeend','<tr><td colspan="6" class="empty">no open positions</td></tr>');
+  // trades table
+  const ttb=$('ttr').tBodies[0];
+  ttb.innerHTML='<tr><td class="mut">Time</td><td class="mut">Symbol</td><td class="mut">Side</td>'+
+    '<td class="mut">Qty</td><td class="mut">Entry→Exit</td><td class="mut">P&amp;L</td></tr>';
+  (d.trades||[]).forEach(t=>{
+    const sell=t.qty>=0;
+    ttb.insertAdjacentHTML('beforeend',
+      `<tr><td class="mut">${t.time}</td><td><b>${t.symbol}</b></td>
+       <td class="${t.pnl>=0?'up':'down'}">${t.pnl>=0?'BUY→SELL':'BUY→SELL'}</td>
+       <td>${fmt(t.qty,6)}</td><td class="mut">$${fmt(t.entry)} → $${fmt(t.exit)}</td>
+       <td class="${t.pnl>=0?'up':'down'}">$${fmt(t.pnl)} (${t.pnl_pct>0?'+':''}${t.pnl_pct}%)</td></tr>`);
+  });
+  if(!d.trades.length)ttb.insertAdjacentHTML('beforeend','<tr><td colspan="6" class="empty">no trades yet</td></tr>');
+  // incremental log
+  const l=await api('/trade/log?since='+TLAST);
+  if(l&&(l.logs||l.entries)){(l.logs||l.entries).forEach(apiLogLine);}
+  if(l&&l.logs&&l.logs.length)TLAST=Math.max(TLAST,...l.logs.map(e=>e.ts));
+}
+function apiLog(msg){
+  $('tlog').insertAdjacentHTML('afterbegin',`<div class="mut">${msg}</div>`);
+  trimLog();
+}
+function apiLogLine(e){
+  const col=e.level==='buy'?'var(--grn)':e.level==='sell'?'var(--acc)':
+    e.level==='error'?'var(--red)':e.level==='warn'?'var(--yel)':'var(--mut)';
+  $('tlog').insertAdjacentHTML('afterbegin',
+    `<div style="color:${col}"><span class="mut">${e.t}</span> ${e.msg}</div>`);
+  trimLog();
+}
+function trimLog(){while($('tlog').children.length>120)$('tlog').lastElementChild.remove();}
+
 /* ---------- INIT ---------- */
 fetchMarket(true);
 setInterval(()=>fetchMarket(true),30000);
 setInterval(checkAlerts,45000);
+setInterval(()=>{if(!$('trade').classList.contains('hidden'))tradeRefresh();},2500);
 window.addEventListener('resize',()=>{if(!$('chart').classList.contains('hidden'))loadChart();});
 </script>
 </body>

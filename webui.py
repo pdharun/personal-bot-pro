@@ -18,6 +18,7 @@ from flask import Flask, jsonify, make_response, redirect, request, send_from_di
 from config.settings import config
 from tools.market_data import provider
 from tools.indicators import all_indicators, signal_summary
+from tools.trade_engine import engine as trade_engine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger("webui")
@@ -244,6 +245,55 @@ def api_signals():
         "rsi": round(float(rsi[-1]), 2) if rsi and rsi[-1] is not None else None,
         "paper_only": True,
     })
+
+
+# ---------------- API: AUTO TRADE ENGINE ----------------
+@app.route("/api/trade/start", methods=["POST"])
+def trade_start():
+    body = request.get_json(silent=True) or {}
+    mode = body.get("mode", "paper")
+    symbols = body.get("symbols")
+    if isinstance(symbols, str):
+        symbols = [s.strip() for s in symbols.replace(",", " ").split() if s.strip()]
+    interval = body.get("interval", "5m")
+    try:
+        scan_every = float(body.get("scan_every", 60))
+        notional = float(body.get("notional", 10))
+    except (TypeError, ValueError):
+        return jsonify({"error": "scan_every/notional must be numbers"}), 400
+    sl = body.get("sl_percent")
+    tp = body.get("tp_percent")
+    try:
+        sl = float(sl) if sl not in (None, "") else None
+        tp = float(tp) if tp not in (None, "") else None
+    except ValueError:
+        return jsonify({"error": "sl_percent/tp_percent must be numbers"}), 400
+    api_key = body.get("api_key") or (config.market.binance_api_key if mode == "real" else "")
+    api_secret = body.get("api_secret") or (config.market.binance_api_secret if mode == "real" else "")
+    res = trade_engine.start(
+        mode=mode, symbols=symbols, interval=interval, scan_every=scan_every,
+        notional=notional, sl_percent=sl, tp_percent=tp,
+        api_key=api_key, api_secret=api_secret, real_confirm=body.get("real_confirm", ""),
+    )
+    return jsonify({"ok": res["ok"], "error": res.get("error"), "state": res.get("state")}), \
+        (200 if res["ok"] else 400)
+
+
+@app.route("/api/trade/stop", methods=["POST"])
+def trade_stop():
+    res = trade_engine.stop()
+    return jsonify({"ok": True, "state": res["state"]})
+
+
+@app.route("/api/trade/status")
+def trade_status():
+    return jsonify(trade_engine.snapshot())
+
+
+@app.route("/api/trade/log")
+def trade_log():
+    since = request.args.get("since", 0, type=float)
+    return jsonify({"logs": trade_engine.log_after(since)})
 
 
 # ---------------- API: FACEBOOK ADS ----------------
