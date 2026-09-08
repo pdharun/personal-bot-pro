@@ -185,10 +185,37 @@ width:26px;height:26px;animation:sp 1s linear infinite;margin:30px auto}
         style="width:100%;padding:14px;font-size:16px;font-weight:800">
         ■ STOP NOW — সাথে সাথে থামাও</button>
       <div class="grid2" style="margin-top:12px">
-        <div class="card small"><span class="mut">Equity</span><br><b id="teq" style="font-size:16px">$—</b></div>
-        <div class="card small"><span class="mut">Cash</span><br><b id="tcas" style="font-size:16px">$—</b></div>
-        <div class="card small"><span class="mut">Realized P&amp;L</span><br><b id="trpnl" style="font-size:16px">$—</b></div>
-        <div class="card small"><span class="mut">Unrealized</span><br><b id="tupnl" style="font-size:16px">$—</b></div>
+        <div class="card small">
+          <span class="mut">Balance (Equity)</span><br>
+          <b id="teq" style="font-size:18px">$—</b><br>
+          <span id="tstarted" class="mut"></span>
+        </div>
+        <div class="card small">
+          <span class="mut">আজকের Gain/Loss</span><br>
+          <b id="ttoday" style="font-size:18px">$—</b><br>
+          <span id="ttodaypct" class="small"></span>
+        </div>
+        <div class="card small">
+          <span class="mut">মোট P&amp;L</span><br>
+          <b id="ttotal" style="font-size:18px">$—</b><br>
+          <span id="ttotalpct" class="small"></span>
+        </div>
+        <div class="card small">
+          <span class="mut">Available (Cash)</span><br>
+          <b id="tcas" style="font-size:18px">$—</b>
+        </div>
+      </div>
+      <div class="card small" style="margin-top:8px">
+        <div class="row spread"><span class="mut">Trading now (invested)</span><b id="tinvestpct">—</b></div>
+        <div style="background:var(--bg2);border-radius:6px;height:8px;margin-top:6px">
+          <div id="tinvestbar" style="background:var(--acc);height:8px;border-radius:6px;width:0%"></div>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:8px">
+        <div class="card small"><span class="mut">Win rate</span><br><b id="twinrate">—</b></div>
+        <div class="card small"><span class="mut">Trades (win/loss)</span><br><b id="ttrades">—</b></div>
+        <div class="card small"><span class="mut">Avg win / loss</span><br><b id="tavg">—</b></div>
+        <div class="card small"><span class="mut">Best / worst</span><br><b id="tbest">—</b></div>
       </div>
       <div class="small mut" id="twnote" style="margin-top:10px"></div>
     </div>
@@ -546,22 +573,32 @@ async function tradeRefresh(){
   $('tsym').textContent=(d.symbols||[]).join(' ');
   $('tlast').textContent='last scan '+(d.last_scan?dtfmt(d.last_scan):'—');
   $('teq').textContent='$'+fmt(d.equity);
+  $('tstarted').textContent='start: $'+fmt(d.start_equity)+' ('+(d.started_pct>0?'+':'')+d.started_pct+'%)';
   $('tcas').textContent='$'+fmt(d.cash);
-  $('trpnl').textContent='$'+fmt(d.realized_pnl);
-  $('trpnl').className=(d.realized_pnl>=0?'up':'down');
-  $('tupnl').textContent='$'+fmt(d.unrealized_pnl);
-  $('tupnl').className=(d.unrealized_pnl>=0?'up':'down');
-  $('twnote').textContent=d.wallet_note+(d.mode==='real'&&d.real_balances.length?
-    ' · USDT balance $'+fmt((d.real_balances.find(b=>b.asset==='USDT')||{}).free):'');
+  const setPnl=(id,pctid,v,pc)=>{$(id).textContent='$'+fmt(v);$(id).className=v>0?'up':v<0?'down':'';
+    if(pctid)$(pctid).textContent=(v>0?'+':'')+pc+'%';};
+  setPnl('ttoday','ttodaypct',d.today_pnl,d.today_pnl_pct);
+  setPnl('ttotal','ttotalpct',d.total_pnl,d.total_pnl_pct);
+  $('tinvestpct').textContent=d.invested_pct+'% → $'+fmt(d.invested);
+  $('tinvestbar').style.width=Math.min(100,d.invested_pct)+'%';
+  const st=d.stats||{};
+  $('twinrate').textContent=st.win_rate+'%';
+  $('ttrades').textContent=st.trades+' ('+st.wins+'/'+st.losses+')';
+  $('tavg').textContent='$'+fmt(st.avg_win)+' / $'+fmt(st.avg_loss);
+  $('tbest').textContent='$'+fmt(st.best)+' / $'+fmt(st.worst);
+  $('twnote').textContent=d.wallet_note+(d.mode==='real'&&d.real_balances.length?''+d.day:'')+
+    (d.mode==='real'&&d.real_balances.length?' · USDT balance $'+fmt((d.real_balances.find(b=>b.asset==='USDT')||{}).free):'')+
+    ' · দিন: '+d.day;
   // positions table
   const ptb=$('tpos').tBodies[0];
   ptb.innerHTML='<tr><td class="mut">Symbol</td><td class="mut">Qty</td><td class="mut">Entry</td>'+
-    '<td class="mut">Last</td><td class="mut">P&amp;L</td><td class="mut">Started</td></tr>';
+    '<td class="mut">Last</td><td class="mut">Value</td><td class="mut">%</td><td class="mut">P&amp;L</td><td class="mut">Started</td></tr>';
   (d.positions||[]).forEach(p=>ptb.insertAdjacentHTML('beforeend',
     `<tr><td><b>${p.symbol}</b></td><td>${fmt(p.qty,6)}</td><td>$${fmt(p.entry)}</td>
-     <td>$${fmt(p.last)}</td><td class="${p.pnl>=0?'up':'down'}">$${fmt(p.pnl)} (${p.pnl_pct>0?'+':''}${p.pnl_pct}%)</td>
+     <td>$${fmt(p.last)}</td><td>$${fmt(p.value)}</td><td>${p.pct}%</td>
+     <td class="${p.pnl>=0?'up':'down'}">$${fmt(p.pnl)} (${p.pnl_pct>0?'+':''}${p.pnl_pct}%)</td>
      <td class="mut">${p.opened}</td></tr>`));
-  if(!d.positions.length)ptb.insertAdjacentHTML('beforeend','<tr><td colspan="6" class="empty">no open positions</td></tr>');
+  if(!d.positions.length)ptb.insertAdjacentHTML('beforeend','<tr><td colspan="8" class="empty">no open positions</td></tr>');
   // trades table
   const ttb=$('ttr').tBodies[0];
   ttb.innerHTML='<tr><td class="mut">Time</td><td class="mut">Symbol</td><td class="mut">Side</td>'+

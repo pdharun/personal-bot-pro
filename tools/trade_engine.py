@@ -14,6 +14,7 @@ import threading
 import time
 import urllib.parse
 from collections import deque
+from datetime import date
 from typing import Any, Dict, List, Optional
 
 import requests
@@ -51,6 +52,12 @@ class TradeEngine:
         self.api_key = ""
         self.api_secret = ""
 
+        # metrics
+        self.start_equity = 1000.0
+        self.day_start_equity = 1000.0
+        self.day_str = str(date.today())
+        self.start_cash = 1000.0
+
     # ---------------- public control ----------------
     def is_running(self) -> bool:
         return self._thread is not None and self._thread.is_alive() and not self._stop.is_set()
@@ -82,6 +89,11 @@ class TradeEngine:
             self._stop.clear()
             self._last_scan = 0.0
             self._started_at = time.time()
+            pos_val = sum(p["qty"] * p["last"] for p in self.positions.values())
+            self.start_equity = round(self.cash + pos_val, 2)
+            self.start_cash = round(self.cash, 2)
+            self.day_start_equity = self.start_equity
+            self.day_str = str(date.today())
             self._thread = threading.Thread(target=self._run, name="trade-engine", daemon=True)
             self._thread.start()
             self._emit("info", f"AUTO TRADE STARTED  ·  mode={self.mode.upper()}  ·  "
@@ -117,7 +129,15 @@ class TradeEngine:
             for sym, p in self.positions.items():
                 value += p["qty"] * p["last"]
             equity = self.cash + value
-            realized = sum(t["pnl"] for t in self.trades)
+            all_trades = list(self.trades)
+            realized = sum(t["pnl"] for t in all_trades)
+            unrealized = round(sum(p["qty"] * (p["last"] - p["entry"]) for p in self.positions.values()), 2)
+            wins = [t for t in all_trades if t["pnl"] > 0]
+            losses = [t for t in all_trades if t["pnl"] < 0]
+            win_rate = round(len(wins) / len(all_trades) * 100, 1) if all_trades else 0.0
+            total_pnl = round(realized + unrealized, 2)
+            invested = sum(p["qty"] * p["last"] for p in self.positions.values())
+            invested_pct = round(invested / equity * 100, 1) if equity > 0 else 0.0
             return {
                 "state": "running" if self.is_running() else "stopped",
                 "mode": self.mode,
@@ -130,17 +150,40 @@ class TradeEngine:
                 "started_at": self._started_at,
                 "last_scan": self._last_scan,
                 "cash": round(self.cash, 2),
+                "equity": round(equity, 2),
+                "start_equity": round(self.start_equity, 2),
+                "start_cash": round(self.start_cash, 2),
+                "started_pct": round((equity / self.start_equity - 1) * 100, 2) if self.start_equity else 0.0,
+                "total_pnl": total_pnl,
+                "total_pnl_pct": round((equity / self.start_equity - 1) * 100, 2) if self.start_equity else 0.0,
+                "realized_pnl": round(realized, 2),
+                "unrealized_pnl": unrealized,
+                "today_pnl": round(equity - self.day_start_equity, 2),
+                "today_pnl_pct": round((equity / self.day_start_equity - 1) * 100, 2) if self.day_start_equity else 0.0,
+                "day": self.day_str,
+                "invested": round(invested, 2),
+                "invested_pct": invested_pct,
                 "positions": [
                     {"symbol": p["symbol"], "qty": p["qty"], "entry": p["entry"],
                      "last": p["last"], "pnl": round((p["last"] - p["entry"]) * p["qty"], 2),
                      "pnl_pct": round((p["last"] / p["entry"] - 1) * 100, 2),
+                     "value": round(p["qty"] * p["last"], 2),
+                     "pct": round(p["qty"] * p["last"] / equity * 100, 1) if equity > 0 else 0.0,
                      "opened": p["opened"]}
                     for p in self.positions.values()
                 ],
-                "equity": round(equity, 2),
-                "realized_pnl": round(realized, 2),
-                "unrealized_pnl": round(equity - self.cash, 2),
-                "trades": list(reversed(list(self.trades)))[:25],
+                "stats": {
+                    "trades": len(all_trades),
+                    "wins": len(wins),
+                    "losses": len(losses),
+                    "win_rate": win_rate,
+                    "avg_pnl": round(sum(t["pnl"] for t in all_trades) / len(all_trades), 2) if all_trades else 0.0,
+                    "avg_win": round(sum(t["pnl"] for t in wins) / len(wins), 2) if wins else 0.0,
+                    "avg_loss": round(sum(t["pnl"] for t in losses) / len(losses), 2) if losses else 0.0,
+                    "best": round(max((t["pnl"] for t in all_trades), default=0.0), 2),
+                    "worst": round(min((t["pnl"] for t in all_trades), default=0.0), 2),
+                },
+                "trades": list(reversed(all_trades))[:25],
                 "log_tail": list(reversed(list(self.log)))[:60],
                 "real_balances": list(self.real_balances),
                 "wallet_note": "PAPER wallet (virtual)" if self.mode == "paper" else "REAL Binance account",
@@ -150,6 +193,13 @@ class TradeEngine:
     def _run(self):
         while not self._stop.is_set():
             now = time.time()
+            today = str(date.today())
+            if today != self.day_str:
+                with self._lock:
+                    pos_val = sum(p["qty"] * p["last"] for p in self.positions.values())
+                    self.day_start_equity = round(self.cash + pos_val, 2)
+                    self.day_str = today
+                    self._emit("info", f"NEW DAY {today} · starting equity ${self.day_start_equity:.2f}")
             if now - self._last_scan >= self.scan_every:
                 try:
                     self._scan()
