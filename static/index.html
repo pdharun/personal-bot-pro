@@ -49,8 +49,7 @@ body{display:grid;grid-template-columns:216px 1fr}
 .side-foot{padding:12px 18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10.5px;color:var(--t3)}
 
 /* ---------- top bar ---------- */
-.top{display:flex;align-items:center;gap:14px;padding:0 20px;height:46px;border-bottom:1px solid var(--line);
-  background:var(--bg)}
+.top{display:flex;align-items:center;gap:14px;padding:0 20px;height:46px;border-bottom:1px solid var(--line);background:var(--bg)}
 .top .sbt{background:none;border:1px solid var(--line);color:var(--t2);border-radius:var(--rad);
   width:28px;height:28px;cursor:pointer;font-size:14px;line-height:1}
 .top .sbt:hover{color:var(--gold);border-color:var(--gold)}
@@ -121,8 +120,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 
 /* ---------- chips / pills ---------- */
 .chipset{display:flex;flex-wrap:wrap;gap:6px}
-.pcoin{font-family:var(--mono);font-size:10.5px;color:var(--t2);border:1px solid var(--line);
-  padding:2px 9px;border-radius:10px}
+.pcoin{font-family:var(--mono);font-size:10.5px;color:var(--t2);border:1px solid var(--line);padding:2px 9px;border-radius:10px}
 .pcoin.on{color:var(--gold);border-color:var(--gold-dim)}
 .pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;
   padding:2px 10px;border-radius:2px;border:1px solid transparent;font-variant-numeric:tabular-nums}
@@ -267,7 +265,7 @@ body.collapsed .lbl,.side-foot{display:none}
       <svg viewBox="0 0 24 24"><path d="M3 11l18-7-7 18-2-7-9-4z"/><path d="M12 15l6-8"/></svg>
       <span>Facebook Ads</span></button>
   </nav>
-  <div class="side-foot" id="sidefoot">PAPER · <span id="sideMode">stopped</span></div>
+  <div class="side-foot" id="sidefoot">Paper · <span id="sideMode">stopped</span></div>
 </aside>
 
 <!-- ============ MAIN ============ -->
@@ -316,8 +314,10 @@ body.collapsed .lbl,.side-foot{display:none}
               <button data-v="4h">4h</button><button data-v="1d">1d</button>
             </div>
             <span class="sub" style="font-family:var(--sans)">overlays</span>
-            <div class="seg">
-              <button id="sma" class="on">SMA</button><button id="ema" class="on">EMA</button><button id="boll" class="on">Boll</button>
+            <div class="seg" id="oset">
+              <button data-v="sma" class="on">SMA</button>
+              <button data-v="ema" class="on">EMA</button>
+              <button data-v="boll" class="on">Boll</button>
             </div>
           </div>
         </div>
@@ -380,7 +380,7 @@ body.collapsed .lbl,.side-foot{display:none}
         <div class="w5">
           <div class="panel">
             <div class="panel-h"><h3>Recent signal</h3></div>
-            <div class="panel-b" id="sres"><div class="empty-state">choose a symbol and analyze<br><span class="mini">RSI · MACD · Bollinger · SMA consensus</span></div></div>
+            <div class="panel-b" id="sres"><div class="empty-state">choose a symbol and analyze<br><span class="mini">RSI, MACD, Bollinger, SMA consensus</span></div></div>
           </div>
         </div>
       </div>
@@ -388,7 +388,6 @@ body.collapsed .lbl,.side-foot{display:none}
 
     <!-- ================= AUTO TRADE ================= -->
     <section id="trade" class="screen hidden">
-      <!-- hero -->
       <div class="hero">
         <div class="metric sh3"><div class="lbl">Balance / equity</div><div class="val" id="teq">—</div>
           <div class="sub" id="tstarted"></div></div>
@@ -400,7 +399,6 @@ body.collapsed .lbl,.side-foot{display:none}
           <div class="sub" id="ttr">— trades</div></div>
       </div>
 
-      <!-- engine status + toggle -->
       <div class="panel" id="engCard">
         <div class="panel-b" style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between">
           <div style="display:flex;align-items:center;gap:16px">
@@ -420,7 +418,7 @@ body.collapsed .lbl,.side-foot{display:none}
           <div style="display:flex;align-items:center;gap:18px">
             <div style="text-align:right">
               <div class="mini" style="margin:0 0 3px">mode</div>
-              <span class="pill paper" id="tmode">PAPER</span>
+              <span class="pill paper" id="tmode">Paper</span>
             </div>
             <div style="text-align:center">
               <div class="mini" style="margin:0 0 6px">engine</div>
@@ -430,7 +428,7 @@ body.collapsed .lbl,.side-foot{display:none}
             </div>
           </div>
         </div>
-        <div id="confirmline" class="hidden" style="border-top:1px solid var(--line);padding:11px 16px;display:flex;
+        <div id="confirmline" class="hidden" style="border-top:1px solid var(--line);padding:11px 16px;
           gap:12px;align-items:center;font-family:var(--sans);font-size:12.5px;color:var(--t1)">
           <span id="cfmsg">—</span>
           <button class="btn-danger" onclick="confirmStop(true)" style="margin-left:auto">Yes, stop now</button>
@@ -438,7 +436,6 @@ body.collapsed .lbl,.side-foot{display:none}
         </div>
       </div>
 
-      <!-- analytics -->
       <div class="grid12">
         <div class="w8">
           <div class="panel">
@@ -465,7 +462,6 @@ body.collapsed .lbl,.side-foot{display:none}
       </div>
 
       <div class="grid12">
-        <!-- config -->
         <div class="w4">
           <div class="panel">
             <div class="panel-h"><h3>Engine configuration</h3><span class="sub">applies on next start</span></div>
@@ -506,20 +502,19 @@ body.collapsed .lbl,.side-foot{display:none}
                 <div class="fgroup">
                   <label class="fl">Execution mode</label>
                   <div class="seg" id="tmode_sel">
-                    <button data-v="paper" class="on">PAPER</button>
-                    <button data-v="real">REAL</button>
+                    <button data-v="paper" class="on">Paper</button>
+                    <button data-v="real">Real</button>
                   </div>
-                  <span class="hint" id="tmodhint">virtual wallet — no real money moves</span>
+                  <span class="hint" id="tmodhint">virtual wallet, no real money moves</span>
                 </div>
                 <div id="trealwarn" class="hidden" style="border:1px solid rgba(224,100,90,.5);background:rgba(224,100,90,.06);
                   border-radius:var(--rad);padding:10px 12px;font-size:11.5px;color:var(--down);line-height:1.5">
-                  Real orders are placed on your Binance account. Confirm with the toggle — live funds only, balance is whatever the market shows.</div>
+                  Real orders are placed on your Binance account. Confirm with the toggle, live funds only, balance is whatever the market shows.</div>
                 <button class="btn-gold" onclick="tradeStart()" style="padding:11px;font-size:13.5px;width:100%">Apply &amp; start engine</button>
               </div>
             </div>
           </div>
         </div>
-        <!-- positions + trades -->
         <div class="w8">
           <div class="panel">
             <div class="panel-h"><h3>Open positions</h3><span class="sub" id="tpossub"></span></div>
@@ -586,32 +581,31 @@ const api=async(path,opts)=>{
 };
 const fmt=(n,d=2)=>n==null||isNaN(n)?'—':Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:Math.max(d,2)});
 const dtfmt=t=>{if(!t)return'—';const d=new Date(t*1000);return d.toLocaleString('en-GB',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});};
-const pnl=(v)=>(v>0?'+':'')+fmt(v);
-const pnlCls=(v)=>v>0?'t-up':v<0?'t-dn':'';
+const pnl=v=>(v>0?'+':'')+fmt(v);
+const pnlCls=v=>v>0?'t-up':v<0?'t-dn':'';
 
 /* ---------- sidebar / nav ---------- */
-function toggleSide(){document.body.classList.toggle('collapsed');}
+function toggleSide(){document.body.classList.toggle('collapsed')}
 function show(v){
   document.querySelectorAll('.screen').forEach(x=>x.classList.add('hidden'));
-  $('market').classList.add('hidden');/* screens regex-like guard */
-  const el=$(v); if(el){el.classList.remove('hidden');}
+  const el=$(v); if(el) el.classList.remove('hidden');
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  if(v==='market')fetchMarket(false);
-  if(v==='chart')loadChart();
-  if(v==='trade'){tradeRefresh();drawAnalytics();}
-  if(v==='fb')fbCampaigns();
-  if(v==='alerts')listAlerts();
+  if(v==='market') fetchMarket(false);
+  if(v==='chart') loadChart();
+  if(v==='trade'){tradeRefresh();drawAnalytics()}
+  if(v==='fb') fbCampaigns();
+  if(v==='alerts') listAlerts();
 }
 
 /* ================= MARKET ================= */
 let COINS=[];
 async function fetchMarket(silent){
-  const d=await api('/market?limit=400'); if(!d)return;
+  const d=await api('/market?limit=400'); if(!d) return;
   COINS=d.coins||[];
   $('mcount').textContent=fmt(d.count||COINS.length,0);
   const fg=d.fear_greed||{};
   $('fgnum').textContent=fg.value||'--';
-  $('fglbl').textContent=(fg.label||'Fear & Greed')+' · market sentiment';
+  $('fglbl').textContent=(fg.label||'Fear & Greed')+', market sentiment';
   $('fgval').textContent=(fg.value||'--')+' / 100';
   $('fgsub').textContent=(fg.label||'—');
   $('fgdot').className='pulse';
@@ -620,35 +614,38 @@ async function fetchMarket(silent){
 }
 function renderMarket(){
   const q=($('q').value||'').toUpperCase();
-  const st=$('market').querySelector('thead tr'); if(!st.rows)st.innerHTML='';
-  st.innerHTML='';['sym','price','chg','high','low','vol'].forEach(k=>{
-    const labels={sym:'Symbol',price:'Price',chg:'24h %',high:'24h High',low:'24h Low',vol:'Vol (24h)'};
+  const st=$('market').querySelector('thead tr'); if(!st) return;
+  st.innerHTML='';
+  [{k:'sym',l:'Symbol'},{k:'price',l:'Price'},{k:'chg',l:'24h %'},{k:'high',l:'24h High'},{k:'low',l:'24h Low'},{k:'vol',l:'Vol (24h)'}].forEach(col=>{
     const th=document.createElement('th');
-    th.innerHTML=labels[k]+(window.MSORT&&window.MSORT.k===k?(window.MSORT.d<0?' ▾':' ▴'):'');
+    const arrow=window.MSORT&&window.MSORT.k===col.k?(window.MSORT.d<0?' ▾':' ▴'):'';
+    th.innerHTML=col.l+arrow;
     th.onclick=()=>{window.MSORT=window.MSORT||{k:'vol',d:-1};
-      if(window.MSORT.k===k)window.MSORT.d*=-1;else{window.MSORT={k,d:-1};window.MSORT.k=k;}
-      renderMarket();};
+      if(window.MSORT.k===col.k)window.MSORT.d*=-1;else window.MSORT={k:col.k,d:-1};renderMarket()};
     st.appendChild(th);});
   let rows=COINS.filter(c=>!q||(c.symbol||'').includes(q)||(c.name||'').toUpperCase().includes(q));
   const s=window.MSORT||{k:'vol',d:-1};
-  rows.sort((a,b)=>{const va=s.k==='sym'?(a.symbol||''):s.k==='name'?(a.name||'').toLowerCase():(a[s.k]||0);
-    const vb=s.k==='sym'?(b.symbol||''):s.k==='name'?(b.name||'').toLowerCase():(b[s.k]||0);
-    try{return s.d*((va>vb)?1:(va<vb?-1:0));}catch(e){return 0;}});
-  const tb=$('mtb');tb.innerHTML='';
+  rows.sort((a,b)=>{
+    let va,VB;
+    if(s.k==='sym'){va=a.symbol||'';VB=b.symbol||''}
+    else if(s.k==='chg'){va=a.change_24h||0;VB=b.change_24h||0}
+    else if(s.k==='high'){va=a.high_24h||0;VB=b.high_24h||0}
+    else if(s.k==='low'){va=a.low_24h||0;VB=b.low_24h||0}
+    else if(s.k==='vol'){va=a.quote_volume||0;VB=b.quote_volume||0}
+    else{va=a.price||0;VB=b.price||0}
+    try{return s.d*((va>VB)?1:(va<VB?-1:0))}catch(e){return 0}});
+  const tb=$('mtb'); tb.innerHTML='';
   rows.slice(0,400).forEach(c=>{
-    const walk=c.sp||pseudoWalk(c.symbol,20,c.high_24h||c.price||1);
+    const walk=pseudoWalk(c.symbol,20,c.high_24h||c.price||1);
     const tr=document.createElement('tr');
     tr.innerHTML=`<td class="sym"><b>${c.symbol}</b><span class="full">${c.name}</span></td>
       <td>$${fmt(c.price)}</td><td class="${c.change_24h>=0?'t-up':'t-dn'}">${c.change_24h?c.change_24h.toFixed(2):'0.00'}%</td>
       <td class="mut">$${fmt(c.high_24h)}</td><td class="mut">$${fmt(c.low_24h)}</td><td class="mut">$${fmt(c.quote_volume,0)}</td>`;
-    const sp=document.createElement('canvas');sp.className='spark';
+    const td=document.createElement('td');
+    const cv=document.createElement('canvas'); cv.className='spark';
+    td.appendChild(cv); requestAnimationFrame(()=>spark(cv,walk,c.change_24h>=0?'var(--up)':'var(--down)'));
+    tr.appendChild(td);
     tr.ondblclick=()=>goChart(c.symbol);
-    tr.appendChild((function(){
-      const td=document.createElement('td');const cv=document.createElement('canvas');
-      cv.className='spark';
-      td.appendChild(cv);requestAnimationFrame(()=>spark(cv,walk,c.change_24h>=0?'var(--up)':'var(--down)'));
-      return td;
-    })());
     tb.appendChild(tr);});
   $('mcount').textContent=fmt(rows.length,0)+' shown · '+fmt(COINS.length,0)+' total';
   renderTicker();
@@ -656,7 +653,7 @@ function renderMarket(){
 function renderTicker(){
   const map={};COINS.forEach(c=>map[c.symbol]=c);
   $('tick').innerHTML=['BTC','ETH','SOL','BNB'].map(s=>{
-    const c=map[s];if(!c)return'';
+    const c=map[s]; if(!c) return '';
     return `<span class="tk"><span class="nm">${s}</span><b>$${fmt(c.price,0)}</b> `
       +`<span class="chip ${c.change_24h>=0?'up':'dn'}">${c.change_24h?c.change_24h.toFixed(1):'0.0'}%</span></span>`;
   }).join('');
@@ -664,134 +661,135 @@ function renderTicker(){
 
 /* ---------- canvas primitives ---------- */
 function prepCanvas(id,draw){
-  const cv=$(id);if(!cv)return;
-  const R=cv.getBoundingClientRect();const W=R.width||300,H=R.height||150;
+  const cv=$(id); if(!cv) return;
+  const R=cv.getBoundingClientRect(); const W=R.width||300, H=R.height||150;
   const dpr=window.devicePixelRatio||1;
-  cv.width=W*dpr;cv.height=H*dpr;
-  const x=cv.getContext('2d');x.scale(dpr,dpr);
-  x.clearRect(0,0,W,H);
-  draw(x,W,H);return {x,W,H};
+  cv.width=W*dpr; cv.height=H*dpr;
+  const x=cv.getContext('2d'); x.scale(dpr,dpr); x.clearRect(0,0,W,H);
+  draw(x,W,H); return {x,W,H};
 }
 function spark(cv,series,color){
-  const R=cv.getBoundingClientRect();const W=R.width||90,H=R.height||28;
-  const dpr=window.devicePixelRatio||1;cv.width=W*dpr;cv.height=H*dpr;
-  const x=cv.getContext('2d');x.scale(dpr,dpr);x.clearRect(0,0,W,H);
-  if(!series||series.length<2)return;
-  let mn=Math.min(...series),mx=Math.max(...series);const pad=(mx-mn)*0.1||1;mn-=pad;mx+=pad;
-  x.strokeStyle=getCSS(color);x.lineWidth=1;x.beginPath();
-  series.forEach((v,i)=>{const X=(i/(series.length-1))*W,Y=H-((v-mn)/(mx-mn))*(H-3)-1;
-    i?x.lineTo(X,Y):x.moveTo(X,Y);});
-  x.stroke();
+  const R=cv.getBoundingClientRect(); const W=R.width||90, H=R.height||28;
+  const dpr=window.devicePixelRatio||1; cv.width=W*dpr; cv.height=H*dpr;
+  const x=cv.getContext('2d'); x.scale(dpr,dpr); x.clearRect(0,0,W,H);
+  if(!series||series.length<2) return;
+  let mn=Math.min(...series), mx=Math.max(...series); const pad=(mx-mn)*0.1||1; mn-=pad; mx+=pad;
+  x.strokeStyle=getCSS(color); x.lineWidth=1; x.beginPath();
+  series.forEach((v,i)=>{const X=(i/(series.length-1))*W, Y=H-((v-mn)/(mx-mn))*(H-3)-1;
+    i?x.lineTo(X,Y):x.moveTo(X,Y)}); x.stroke();
 }
-function getCSS(v){const g=document.querySelector('canvas');if(!g)return v;
-  if(v==='var(--up)')return'#3FBF8F';if(v==='var(--down)')return'#E0645A';
-  if(v==='var(--gold)')return'#C4A467';return v;}
+function getCSS(v){
+  if(v==='var(--up)')return'#3FBF8F'; if(v==='var(--down)')return'#E0645A';
+  if(v==='var(--gold)')return'#C4A467'; return v;
+}
 function pseudoWalk(sym,n=20,base=1){
-  let seed=0;const str=sym+'';for(let i=0;i<str.length;i++)seed=(seed*31+str.charCodeAt(i))>>>0;
-  const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
-  const out=[base];let v=base;
-  for(let i=0;i<n;i++){v=v*(1+(rnd()-0.5)*0.05);out.push(v);}
+  let seed=0; const str=sym+''; for(let i=0;i<str.length;i++) seed=(seed*31+str.charCodeAt(i))>>>0;
+  const rnd=()=>{seed=(seed*1664525+1013904223)>>>0; return seed/4294967296};
+  const out=[base]; let v=base;
+  for(let i=0;i<n;i++){v=v*(1+(rnd()-0.5)*0.05); out.push(v)}
   return out;
 }
 function drawGauge(id,pct){
   prepCanvas(id,(x,W,H)=>{
-    const r=Math.min(W/2,H)-3,cx=W/2,cy=H-1;
-    x.strokeStyle='#242833';x.lineWidth=5;x.lineCap='round';
-    x.beginPath();x.arc(cx,cy,r,Math.PI,0);x.stroke();
+    const r=Math.min(W/2,H)-3, cx=W/2, cy=H-1;
+    x.strokeStyle='#242833'; x.lineWidth=5; x.lineCap='round';
+    x.beginPath(); x.arc(cx,cy,r,Math.PI,0); x.stroke();
     const v=Math.max(0,Math.min(100,pct||0));
     x.strokeStyle=v>=60?'#3FBF8F':v<=40?'#E0645A':'#C4A467';
-    x.beginPath();x.arc(cx,cy,r,Math.PI,Math.PI+(Math.PI)*(v/100));x.stroke();
-    x.fillStyle='#8A8F9C';x.font='10px IBM Plex Mono';x.textAlign='center';
+    x.beginPath(); x.arc(cx,cy,r,Math.PI,Math.PI+(Math.PI)*(v/100)); x.stroke();
+    x.fillStyle='#8A8F9C'; x.font='10px IBM Plex Mono'; x.textAlign='center';
     x.fillText(v+'%',cx,cy-3);
   });
 }
 function drawLineSeries(cv,series,color,fill){
   prepCanvas(cv,(x,W,H)=>{
-    if(series.length<2){x.fillStyle='#8A8F9C';x.font='10px Inter';x.textAlign='center';
-      x.fillText(series.length?'collecting samples…':'no data yet',W/2,H/2);return;}
-    const ys=series.map(s=>s.y),mn=Math.min(...ys),mx=Math.max(...ys);
-    const pad=(mx-mn)*0.08||1,mn2=mn-pad,mx2=mx+pad;
-    const L=6,T=6,R=W-6,B=H-10;
-    x.strokeStyle='#242833';x.lineWidth=1;
-    for(let i=0;i<=4;i++){const y=T+(B-T)*i/4;x.beginPath();x.moveTo(L,y);x.lineTo(R,y);x.stroke();}
-    x.strokeStyle=getCSS(color);x.lineWidth=1.6;x.beginPath();
-    series.forEach((s,i)=>{const X=L+(i/(series.length-1))*(R-L),Y=B-((s.y-mn2)/(mx2-mn2))*(B-T);
-      i?x.lineTo(X,Y):x.moveTo(X,Y);});
-    x.stroke();
-    if(fill){x.lineTo(R,B);x.lineTo(L,B);x.closePath();
-      x.fillStyle=getCSS(color)||'#C4A467';x.globalAlpha=0.08;x.fill();x.globalAlpha=1;}
+    if(series.length<2){x.fillStyle='#8A8F9C'; x.font='10px Inter'; x.textAlign='center';
+      x.fillText(series.length?'collecting samples…':'no data yet',W/2,H/2); return}
+    const ys=series.map(s=>s.y), mn=Math.min(...ys), mx=Math.max(...ys);
+    const pad=(mx-mn)*0.08||1, mn2=mn-pad, mx2=mx+pad;
+    const L=6, T=6, R=W-6, B=H-10;
+    x.strokeStyle='#242833'; x.lineWidth=1;
+    for(let i=0;i<=4;i++){const y=T+(B-T)*i/4; x.beginPath(); x.moveTo(L,y); x.lineTo(R,y); x.stroke()}
+    x.strokeStyle=getCSS(color); x.lineWidth=1.6; x.beginPath();
+    series.forEach((s,i)=>{const X=L+(i/(series.length-1))*(R-L), Y=B-((s.y-mn2)/(mx2-mn2))*(B-T);
+      i?x.lineTo(X,Y):x.moveTo(X,Y)}); x.stroke();
+    if(fill){x.lineTo(R,B); x.lineTo(L,B); x.closePath();
+      x.fillStyle=getCSS(color)||'#C4A467'; x.globalAlpha=0.08; x.fill(); x.globalAlpha=1}
     const last=series[series.length-1];
-    x.fillStyle='#C4A467';x.beginPath();x.arc(L+(series.length-1)/(series.length-1)*(R-L),B-((last.y-mn2)/(mx2-mn2))*(B-T),2.5,0,7);x.fill();
-    x.fillStyle='#8A8F9C';x.font='10px IBM Plex Mono';x.textAlign='right';
-    x.fillText(fmt(mx,0),R-4,T+6);x.fillText(fmt(mn,0),R-4,B-2);
+    x.fillStyle='#C4A467'; x.beginPath(); x.arc(L+(series.length-1)/(series.length-1)*(R-L),B-((last.y-mn2)/(mx2-mn2))*(B-T),2.5,0,7); x.fill();
+    x.fillStyle='#8A8F9C'; x.font='10px IBM Plex Mono'; x.textAlign='right';
+    x.fillText(fmt(mx,0),R-4,T+6); x.fillText(fmt(mn,0),R-4,B-2);
   });
 }
 function drawDonut(cv,win,loss){
   prepCanvas(cv,(x,W,H)=>{
     const tot=win+loss;
-    x.fillStyle='#8A8F9C';x.font='11px IBM Plex Mono';x.textAlign='center';
-    if(!tot){x.fillText('no closed trades yet',W/2,H/2);return;}
-    const r=Math.min(W/2,H/2)-8,cx=W/2,cy=H/2;
-    x.lineWidth=14;x.lineCap='butt';
+    x.fillStyle='#8A8F9C'; x.font='11px IBM Plex Mono'; x.textAlign='center';
+    if(!tot){x.fillText('no closed trades yet',W/2,H/2); return}
+    const r=Math.min(W/2,H/2)-8, cx=W/2, cy=H/2;
+    x.lineWidth=14; x.lineCap='butt';
     const aW=win/tot*Math.PI*2;
-    x.strokeStyle='#242833';x.beginPath();x.arc(cx,cy,r,0,Math.PI*2);x.stroke();
-    x.strokeStyle='#3FBF8F';x.beginPath();x.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+aW);x.stroke();
-    x.strokeStyle='#E0645A';x.beginPath();x.arc(cx,cy,r,-Math.PI/2+aW,-Math.PI/2+Math.PI*2);x.stroke();
-    x.fillStyle='#E9EAEE';x.font='600 16px IBM Plex Mono';x.fillText(Math.round(win/tot*100)+'%',cx,cy);
-    x.fillStyle='#8A8F9C';x.font='9px IBM Plex Mono';x.fillText('win rate',cx,cy+12);
+    x.strokeStyle='#242833'; x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.stroke();
+    x.strokeStyle='#3FBF8F'; x.beginPath(); x.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+aW); x.stroke();
+    x.strokeStyle='#E0645A'; x.beginPath(); x.arc(cx,cy,r,-Math.PI/2+aW,-Math.PI/2+Math.PI*2); x.stroke();
+    x.fillStyle='#E9EAEE'; x.font='600 16px IBM Plex Mono'; x.fillText(Math.round(win/tot*100)+'%',cx,cy);
+    x.fillStyle='#8A8F9C'; x.font='9px IBM Plex Mono'; x.fillText('win rate',cx,cy+12);
   });
 }
-function drawBars(cv,data,cls){
+function drawBars(cv,data){
   prepCanvas(cv,(x,W,H)=>{
-    if(!data||!data.length){x.fillStyle='#8A8F9C';x.font='10px Inter';x.textAlign='center';
-      x.fillText('no session data yet',W/2,H/2);return;}
-    const L=26,R=8,T=12,B=H-16,n=data.length,bw=Math.max(6,(W-L-R)/n-6);
-    x.strokeStyle='#242833';x.beginPath();x.moveTo(L,0);x.lineTo(L,B);x.stroke();
+    if(!data||!data.length){x.fillStyle='#8A8F9C'; x.font='10px Inter'; x.textAlign='center';
+      x.fillText('no session data yet',W/2,H/2); return}
+    const L=26, R=8, T=12, B=H-16, n=data.length, bw=Math.max(6,(W-L-R)/n-6);
+    x.strokeStyle='#242833'; x.beginPath(); x.moveTo(L,0); x.lineTo(L,B); x.stroke();
     const mx=Math.max(...data.map(d=>Math.abs(d.v)),1);
-    x.strokeStyle='#242833';x.lineWidth=1;
-    x.beginPath();x.moveTo(L,B/2);x.lineTo(W-R,B/2);x.stroke();
-    x.fillStyle='#8A8F9C';x.font='9px IBM Plex Mono';x.textAlign='right';
-    x.fillText('+'+fmt(mx,0),L-3,T+4);x.fillText('-'+fmt(mx,0),L-3,B-4);
+    x.strokeStyle='#242833'; x.lineWidth=1;
+    x.beginPath(); x.moveTo(L,B/2); x.lineTo(W-R,B/2); x.stroke();
+    x.fillStyle='#8A8F9C'; x.font='9px IBM Plex Mono'; x.textAlign='right';
+    x.fillText('+'+fmt(mx,0),L-3,T+4); x.fillText('-'+fmt(mx,0),L-3,B-4);
     data.forEach((d,i)=>{
       const h=Math.abs(d.v)/mx*(B-T-4)/2;
       const y=d.v>=0?B/2-h:B/2;
-      x.fillStyle=d.v>=0?'#3FBF8F':'#E0645A';x.globalAlpha=.85;
-      x.fillRect(L+i*(bw+6),y,Math.max(bw,1),Math.max(h,1));x.globalAlpha=1;
-      x.fillStyle='#8A8F9C';x.font='8.5px IBM Plex Mono';x.textAlign='center';
+      x.fillStyle=d.v>=0?'#3FBF8F':'#E0645A'; x.globalAlpha=.85;
+      x.fillRect(L+i*(bw+6),y,Math.max(bw,1),Math.max(h,1)); x.globalAlpha=1;
+      x.fillStyle='#8A8F9C'; x.font='8.5px IBM Plex Mono'; x.textAlign='center';
       x.fillText(d.lb,L+i*(bw+6)+bw/2,B+10);
     });
   });
 }
 
 /* ================= CHART ================= */
-let CURR='BTC',CURTF='1h';
-document.getElementById('ctf').addEventListener('click',e=>{
-  const b=e.target.closest('button');if(!b)return;
+let CURR='BTC', CURTF='1h', OVERLAYS={sma:true,ema:true,boll:true};
+$('ctf').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
   CURTF=b.dataset.v;
   document.querySelectorAll('#ctf button').forEach(x=>x.classList.toggle('on',x===b));
-  loadChart();});
-['sma','ema','boll'].forEach(id=>{
-  $('sma').onclick=e=>{e.target.classList.toggle('on');loadChart();};
+  loadChart();
+});
+$('oset').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  const k=b.dataset.v; OVERLAYS[k]=!OVERLAYS[k]; b.classList.toggle('on',OVERLAYS[k]);
+  loadChart();
 });
 async function loadChart(){
   const sym=($('cs').value||'BTC').toUpperCase().replace(/USDT/,'');
-  $('cs').value=sym;CURR=sym;
+  $('cs').value=sym; CURR=sym;
   $('clast').textContent='Loading '+sym+' · '+CURTF+'…';
   const d=await api('/chart?symbol='+encodeURIComponent(sym)+'&interval='+CURTF);
-  if(!d||d.error){$('clast').textContent=(d&&d.error)||'error';return null;}
+  if(!d||d.error){$('clast').textContent=(d&&d.error)||'error'; return null}
   $('clast').textContent=`${d.symbol} / USDT · ${d.interval}`;
   $('verdicttxt').textContent=d.verdict||'HOLD';
   $('verdict').style.borderColor=(d.verdict==='BUY'?'rgba(63,191,143,.5)':d.verdict==='SELL'?'rgba(224,100,90,.5)':'rgba(196,164,103,.4)');
   $('verdicttxt').style.color=(d.verdict==='BUY'?'#3FBF8F':d.verdict==='SELL'?'#E0645A':'#C4A467');
   $('rlast').textContent='$'+fmt(d.last_price);
   $('rint').textContent=d.interval;
-  const r=d.rsi14||[];const lr=r.filter(v=>v!=null).pop();
+  const r=d.rsi14||[]; const lr=r.filter(v=>v!=null).pop();
   $('rrsi').textContent=lr==null?'—':fmt(lr,1);
   $('rmacd').textContent=(d.macd_h&&d.macd_h.length)?fmt(d.macd_h.filter(v=>v!=null).pop(),3):'—';
-  const bu=d.boll_up&&d.boll_up.filter(v=>v!=null).pop(),bo=d.boll_mid&&d.boll_mid.filter(v=>v!=null).pop(),bl=d.boll_lo&&d.boll_lo.filter(v=>v!=null).pop();
-  const sma5=d.sma5&&d.sma5.filter(v=>v!=null).pop(),sma20=d.sma20&&d.sma20.filter(v=>v!=null).pop();
+  const bu=d.boll_up&&d.boll_up.filter(v=>v!=null).pop(), bl=d.boll_lo&&d.boll_lo.filter(v=>v!=null).pop();
   $('rboll').textContent=(bu==null?'—':'$'+fmt(bu)+' / $'+fmt(bl));
-  $('rtrend').textContent=(sma5!=null&&sma20!=null)?(sma5>sma20?'UPTREND':'DOWNTREND'):'—';
+  const sma5=d.sma5&&d.sma5.filter(v=>v!=null).pop(), sma20=d.sma20&&d.sma20.filter(v=>v!=null).pop();
+  $('rtrend').textContent=(sma5!=null&&sma20!=null)?(sma5>sma20?'Uptrend':'Downtrend'):'—';
   $('rtrend').className='v '+(sma5>sma20?'t-up':'t-dn');
   $('rsignals').innerHTML=(d.signals&&d.signals.length)?'<div class="tl">'+d.signals.map(sg=>
     `<div class="atl"><span style="color:var(--gold)">◆</span><span class="ttl" style="font-family:var(--mono);font-size:11.5px;color:var(--t1)">${sg}</span></div>`).join('')+'</div>':
@@ -801,98 +799,99 @@ async function loadChart(){
 }
 function drawChart(d){
   prepCanvas('cv',(x,W,H)=>{
-    const C=d.candles;if(!C||C.length<2){x.fillStyle='#8A8F9C';x.font='11px Inter';x.textAlign='center';
-      x.fillText('not enough data to draw',W/2,H/2);return;}
+    const C=d.candles; if(!C||C.length<2){x.fillStyle='#8A8F9C'; x.font='11px Inter'; x.textAlign='center';
+      x.fillText('not enough data to draw',W/2,H/2); return}
     const P={left:56,right:10,top:12,bottom:22};
-    const vh=(H-P.top-P.bottom)*0.86;
-    const priceH=vh;
-    const pw=W-P.left-P.right,n=C.length,cw=pw/n,times=C.map(c=>c.t);
+    const priceH=(H-P.top-P.bottom)*0.86;
+    const pw=W-P.left-P.right, n=C.length, cw=pw/n, times=C.map(c=>c.t);
     const prices=k=>C.map(c=>c[k]);
-    let min=Math.min(...prices('l')),max=Math.max(...prices('h'));
-    const pad=(max-min)*0.06||1;min-=pad;max+=pad;
+    let min=Math.min(...prices('l')), max=Math.max(...prices('h'));
+    const pad=(max-min)*0.06||1; min-=pad; max+=pad;
     const priceScale=p=>P.top+priceH-((p-min)/(max-min))*priceH;
     const LEG=[];
     function overlay(ax,arr,color,dash){
-      if(!arr)return;ax.strokeStyle=color;ax.lineWidth=1.1;if(dash)ax.setLineDash([3,3]);
-      ax.beginPath();let s=false;
-      arr.forEach((v,i)=>{if(v==null)return;const px=P.left+i*cw;
-        if(!s){ax.moveTo(px,P.top+priceScale(v));s=true;}else ax.lineTo(px,P.top+priceScale(v));});
-      if(s)ax.stroke();ax.setLineDash([]);}
-    if($('sma').classList.contains('on')&&d.sma5&&d.sma5.some(v=>v)){overlay(x,d.sma5,'#8A8F9C');overlay(x,d.sma20,'#8A8F9C');LEG.push('SMA 5/20');}
-    if($('ema').classList.contains('on')&&d.ema12&&d.ema12.some(v=>v)){overlay(x,d.ema12,'#C4A467');overlay(x,d.ema26,'#C4A467');LEG.push('EMA 12/26');}
-    if($('boll').classList.contains('on')&&d.boll_up&&d.boll_up.some(v=>v)){
+      if(!arr) return; ax.strokeStyle=color; ax.lineWidth=1.1; if(dash) ax.setLineDash([3,3]);
+      ax.beginPath(); let s=false;
+      arr.forEach((v,i)=>{if(v==null) return; const px=P.left+i*cw;
+        if(!s){ax.moveTo(px,P.top+priceScale(v));s=true}else ax.lineTo(px,P.top+priceScale(v))});
+      if(s) ax.stroke(); ax.setLineDash([])}
+    if(OVERLAYS.sma&&d.sma5&&d.sma5.some(v=>v)){overlay(x,d.sma5,'#8A8F9C');overlay(x,d.sma20,'#8A8F9C');LEG.push('SMA 5/20')}
+    if(OVERLAYS.ema&&d.ema12&&d.ema12.some(v=>v)){overlay(x,d.ema12,'#C4A467');overlay(x,d.ema26,'#C4A467');LEG.push('EMA 12/26')}
+    if(OVERLAYS.boll&&d.boll_up&&d.boll_up.some(v=>v)){
       overlay(x,d.boll_up,'#242833',true);overlay(x,d.boll_lo,'#242833',true);overlay(x,d.boll_mid,'#242833');
-      LEG.push('BB 20');}
-    x.strokeStyle='#191d26';x.fillStyle='#565B68';x.font='9px IBM Plex Mono';
+      LEG.push('BB 20')}
+    x.strokeStyle='#191d26'; x.fillStyle='#565B68'; x.font='9px IBM Plex Mono';
     for(let g=0;g<=4;g++){const py=P.top+priceH*g/4;
-      x.beginPath();x.moveTo(P.left,py);x.lineTo(W-P.right,py);x.stroke();
+      x.beginPath(); x.moveTo(P.left,py); x.lineTo(W-P.right,py); x.stroke();
       const v=max-(max-min)*g/4;
-      x.fillText(v.toFixed(v<10?4:v<100?2:0),2,py+3);}
+      x.fillText(v.toFixed(v<10?4:v<100?2:0),2,py+3)}
     for(let i=0;i<n;i++){
-      const c=C[i],up=c.c>=c.o,col=up?'#3FBF8F':'#E0645A';
-      const px=P.left+i*cw+cw/2,w=cw*0.62;
-      x.strokeStyle=col;x.lineWidth=1;
-      x.beginPath();x.moveTo(px,priceScale(c.h));x.lineTo(px,priceScale(c.l));x.stroke();
-      const oy=priceScale(c.o),cy=priceScale(c.c);
-      x.fillStyle=col;x.fillRect(px-w/2,Math.min(oy,cy),Math.max(w,1),Math.max(Math.abs(cy-oy),1));}
-    x.strokeStyle='#C4A467';x.lineWidth=.9;x.setLineDash([3,3]);
-    x.beginPath();x.moveTo(P.left,priceScale(C[n-1].c));x.lineTo(W-P.right,priceScale(C[n-1].c));x.stroke();
-    x.setLineDash([]);x.fillStyle='#C4A467';
-    x.textAlign='left';x.fillText(fmt(C[n-1].c),P.left+4,Math.max(priceScale(C[n-1].c)-3,8));
-    x.fillStyle='#8A8F9C';x.font='9px IBM Plex Mono';x.textAlign='right';
-    LEG.forEach((l,i)=>{x.fillText(l,W-P.right-2,P.top+10+i*12);});
+      const c=C[i], up=c.c>=c.o, col=up?'#3FBF8F':'#E0645A';
+      const px=P.left+i*cw+cw/2, w=cw*0.62;
+      x.strokeStyle=col; x.lineWidth=1;
+      x.beginPath(); x.moveTo(px,priceScale(c.h)); x.lineTo(px,priceScale(c.l)); x.stroke();
+      const oy=priceScale(c.o), cy=priceScale(c.c);
+      x.fillStyle=col; x.fillRect(px-w/2,Math.min(oy,cy),Math.max(w,1),Math.max(Math.abs(cy-oy),1))}
+    x.strokeStyle='#C4A467'; x.lineWidth=.9; x.setLineDash([3,3]);
+    x.beginPath(); x.moveTo(P.left,priceScale(C[n-1].c)); x.lineTo(W-P.right,priceScale(C[n-1].c)); x.stroke();
+    x.setLineDash([]); x.fillStyle='#C4A467';
+    x.textAlign='left'; x.fillText(fmt(C[n-1].c),P.left+4,Math.max(priceScale(C[n-1].c)-3,8));
+    x.fillStyle='#8A8F9C'; x.font='9px IBM Plex Mono'; x.textAlign='right';
+    LEG.forEach((l,i)=>{x.fillText(l,W-P.right-2,P.top+10+i*12)});
     x.textAlign='left';
-    x.fillStyle='#565B68';x.font='9px IBM Plex Mono';
+    x.fillStyle='#565B68'; x.font='9px IBM Plex Mono';
     x.fillText(dtfmt(times[0]),P.left,H-8);
     x.fillText(dtfmt(times[Math.floor(n/2)]),P.left+pw/2-22,H-8);
     x.fillText(dtfmt(times[n-1]),W-P.right-44,H-8);
   });
 }
-function goChart(sym){$('cs').value=sym;show('chart');}
+function goChart(sym){$('cs').value=sym; show('chart')}
 
 /* ================= ALERTS ================= */
 let ACNT=0;
 function atlRow(a,sev,ic){
-  const el=document.createElement('div');el.className='atl';
+  const el=document.createElement('div'); el.className='atl';
   el.innerHTML=`<div class="ic" style="color:${sev===3?'#E0645A':sev===2?'#C4A467':'#8A8F9C'};border-color:${sev===3?'rgba(224,100,90,.4)':sev===2?'rgba(196,164,103,.4)':'var(--line)'}">${ic}</div>
     <div class="bd"><div class="ttl">${a.symbol} · ${a.condition} <b>$${fmt(a.target_price)}</b></div>
-    <div class="meta">id ${a.id} · active</div></div>
-    <span class="sg ${sev===3?'err':sev===2?'hold':''}">${sev===3?'triggered':'watch'}</span>
+    <div class="meta">id ${a.id}, active</div></div>
+    <span class="sg ${sev===3?'err':sev===2?'hold':''}">${sev===3?'Triggered':'Watching'}</span>
     <button class="atx" onclick="delAlert('${a.id}')" aria-label="Delete alert">✕</button>`;
   $('alist').appendChild(el);
 }
 async function listAlerts(){
-  const d=await api('/alerts');if(!d)return;
+  const d=await api('/alerts'); if(!d) return;
   const items=(d.alerts||[]).concat((d.triggered||[]).map(t=>({...t,active:false})));
   $('alist').innerHTML='';
   if(!items.length){$('alist').innerHTML='<div class="empty-state"><b>No price alerts yet</b><br><span class="mini">add one to start watching the market</span></div>';}
-  items.forEach(a=>{if(a.active)atlRow(a,1,'◎');else {const el=document.createElement('div');el.className='atl';
-    el.innerHTML=`<div class="ic" style="color:#E0645A;border-color:rgba(224,100,90,.4)">▲</div>
-      <div class="bd"><div class="ttl">${a.symbol} · ${a.condition} $${fmt(a.target_price)} → $${fmt(a.current_price)}</div>
-      <div class="meta">triggered · ${dtfmt(a.triggered_at)}</div></div><span class="sg err">TRIGGERED</span>`;
-    $('alist').appendChild(el);}});
+  items.forEach(a=>{
+    if(a.active) atlRow(a,1,'◎');
+    else{const el=document.createElement('div'); el.className='atl';
+      el.innerHTML=`<div class="ic" style="color:#E0645A;border-color:rgba(224,100,90,.4)">▲</div>
+        <div class="bd"><div class="ttl">${a.symbol} · ${a.condition} $${fmt(a.target_price)} → $${fmt(a.current_price)}</div>
+        <div class="meta">triggered, ${dtfmt(a.triggered_at)}</div></div><span class="sg err">Triggered</span>`;
+      $('alist').appendChild(el);}});
   $('aalerts').textContent=fmt((d.alerts||[]).length,0);
   $('atrig').textContent=fmt((d.triggered||[]).length,0);
 }
 async function addAlert(){
-  const s=$('as').value.toUpperCase().replace(/USDT/,''),ap=parseFloat($('ap').value);
-  if(!s||isNaN(ap)){return}
+  const s=$('as').value.toUpperCase().replace(/USDT/,''), ap=parseFloat($('ap').value);
+  if(!s||isNaN(ap)) return;
   await api('/alerts',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({symbol:s,condition:$('ac').value,target_price:ap})});
-  $('ap').value='';listAlerts();
+  $('ap').value=''; listAlerts();
 }
-async function delAlert(id){await api('/alerts/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});listAlerts();}
+async function delAlert(id){await api('/alerts/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});listAlerts()}
 async function checkAlerts(){
-  const d=await api('/alerts/check',{method:'POST'});if(!d)return;
-  if(d.triggered&&d.triggered.length){const el=document.createElement('div');el.className='atl';
+  const d=await api('/alerts/check',{method:'POST'}); if(!d) return;
+  if(d.triggered&&d.triggered.length){const el=document.createElement('div'); el.className='atl';
     el.innerHTML=`<div class="ic" style="color:#E0645A;border-color:rgba(224,100,90,.4)">▲</div>
       <div class="bd"><div class="ttl">${d.triggered[0].symbol} · ${d.triggered[0].condition} <b>$${fmt(d.triggered[0].target_price)}</b> → $${fmt(d.triggered[0].current_price)}</div>
-      <div class="meta">price breached · now</div></div><span class="sg err">TRIGGERED</span>`;
+      <div class="meta">price breached, now</div></div><span class="sg err">Triggered</span>`;
     $('alist').prepend(el);}
   listAlerts();
 }
-document.getElementById('stf').addEventListener('click',e=>{
-  const b=e.target.closest('button');if(!b)return;
+$('stf').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
   document.querySelectorAll('#stf button').forEach(x=>x.classList.toggle('on',x===b));
 });
 async function runSignal(){
@@ -900,7 +899,7 @@ async function runSignal(){
   const tf=document.querySelector('#stf button.on')?.dataset.v||'1h';
   $('sres').innerHTML='<div class="empty-state">analyzing…</div>';
   const d=await api('/signals?symbol='+encodeURIComponent(s)+'&interval='+tf);
-  if(!d)return;
+  if(!d) return;
   const v=d.verdict||'HOLD';
   const col=v==='BUY'?'#3FBF8F':v==='SELL'?'#E0645A':'#C4A467';
   $('sres').innerHTML=`<div class="stat-row"><span class="k" style="color:${col};font-family:var(--serif);font-size:13px;font-weight:600">Verdict</span>
@@ -909,86 +908,84 @@ async function runSignal(){
     <div class="stat-row"><span class="k">RSI (14)</span><span class="v">${d.rsi??'—'}</span></div>
     ${(d.signals||[]).map(sg=>`<div class="stat-row"><span class="k">·</span><span class="v" style="color:var(--t2)">${sg}</span></div>`).join('')}
     <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--t3);font-size:10.5px;font-family:var(--mono)">
-      signal only — orders are never placed from here</div>`;
+      signal only, orders are never placed from here</div>`;
 }
 
 /* ================= FB ADS ================= */
-let FBCAMPS=[];let _cid=null;
+let FBCAMPS=[]; let _cid=null;
 async function fbCampaigns(){
-  const d=await api('/fb/campaigns');if(!d)return;
+  const d=await api('/fb/campaigns'); if(!d) return;
   fbLog(d);
-  if(d.error){setFbEmpty(d.error);return;}
+  if(d.error){setFbEmpty(d.error); return}
   FBCAMPS=d.campaigns||[];
-  const tb=$('fbt');tb.innerHTML='';
+  const tb=$('fbt'); tb.innerHTML='';
   if(!FBCAMPS.length){tb.innerHTML='<tr><td colspan="6" class="empty-state">no campaigns on this account yet</td></tr>';}
-  const spend=(d.summary||{}).spend,spr=d.summary;
   FBCAMPS.forEach(c=>{
     const tr=document.createElement('tr');
     const act=c.status==='ACTIVE';
     tr.innerHTML=`<td class="mut">${c.id}</td><td><b>${c.name}</b></td>
-      <td><span class="pill ${act?'ok':'stop'}">${c.status}</span></td>
-      <td class="mut">${c.objective}</td>      <td>$${c.daily_budget!=null?(c.daily_budget/100).toFixed(2):'—'}</td><td class="mut">${(c.start_time||'').slice(0,10)}</td>`;
-    tr.onclick=()=>{tb.querySelectorAll('tr.sel').forEach(r=>r.classList.remove('sel'));tr.classList.add('sel');_cid=c.id;};
+      <td><span class="pill ${act?'ok':'stop'}">${c.status||'—'}</span></td>
+      <td class="mut">${c.objective||'—'}</td><td>${c.daily_budget!=null?'$'+(c.daily_budget/100).toFixed(2):'—'}</td><td class="mut">${(c.start_time||'').slice(0,10)||'—'}</td>`;
+    tr.onclick=()=>{tb.querySelectorAll('tr.sel').forEach(r=>r.classList.remove('sel'));tr.classList.add('sel');_cid=c.id};
     tb.appendChild(tr);});
   $('fb_cnt').textContent=fmt(FBCAMPS.length,0);
 }
 function setFbEmpty(err){
-  const tb=$('fbt');tb.innerHTML=`<tr><td colspan="6" class="empty-state"><b>Facebook ads unavailable</b><br><span class="mini">${err||'check the connector token'}</span></td></tr>`;
+  const tb=$('fbt'); tb.innerHTML=`<tr><td colspan="6" class="empty-state"><b>Facebook ads unavailable</b><br><span class="mini">${err||'check the connector token'}</span></td></tr>`;
   $('fb_spend').textContent='—';$('fb_cpc').textContent='—';$('fb_roas').textContent='—';$('fb_cnt').textContent='—';
 }
 async function fbAct(action){
-  if(!_cid){fbLog({error:'select a campaign row first'});return}
+  if(!_cid){fbLog({error:'select a campaign row first'}); return}
   const d=await api('/fb/action',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({action,campaign_id:_cid})});
-  fbLog(d);fbCampaigns();
+  fbLog(d); fbCampaigns();
 }
 async function fbInsights(){
-  const d=await api('/fb/insights');if(!d)return;
-  if(d.error){fbLog(d);$('fbins').innerHTML=`<div class="empty-state"><b>No insights</b><br><span class="mini">${d.error}</span></div>`;return;}
+  const d=await api('/fb/insights'); if(!d) return;
+  if(d.error){fbLog(d);$('fbins').innerHTML=`<div class="empty-state"><b>No insights</b><br><span class="mini">${d.error}</span></div>`; return}
   const rows=(d.insights||[]).slice(0,12);
   $('fbins').innerHTML=rows.length?'<div class="tl">'+rows.map(r=>
     `<div class="atl"><span class="ic" style="color:#C4A467;border-color:rgba(196,164,103,.4)">▦</span>
-     <div class="bd"><div class="ttl">${r.date_start} → ${r.date_stop}</div>
-     <div class="meta">spend $${fmt(r.spend)} · impressions ${fmt(r.impressions,0)} · clinks ${fmt(r.clicks,0)}</div></div>
+     <div class="bd"><div class="ttl">${r.campaign_name||r.campaign_id||'Campaign'}</div>
+     <div class="meta">spend $${fmt(r.spend)} · impressions ${fmt(r.impressions,0)} · clicks ${fmt(r.clicks,0)}</div></div>
      <span class="sg hold">CTR ${r.ctr||'—'}%</span></div>`).join('')+'</div>':
     '<div class="empty-state">no insight rows returned</div>';
   const allRows=d.insights||[];
   const totSpend=allRows.reduce((s,r)=>s+(parseFloat(r.spend)||0),0);
   const totClicks=allRows.reduce((s,r)=>s+(parseFloat(r.clicks)||0),0);
-  const roasVals=allRows.map(r=>parseFloat(r.purchase_roas)||0).filter(v=>v>0);
+  const roasVals=allRows.map(r=>parseFloat(r.roas)||0).filter(v=>v>0);
   $('fb_spend').textContent=totSpend?'$'+fmt(totSpend):'—';
   $('fb_cpc').textContent=(totSpend&&totClicks)?'$'+fmt(totSpend/totClicks):'—';
   $('fb_roas').textContent=roasVals.length?(fmt(roasVals.reduce((a,b)=>a+b,0)/roasVals.length)+'x'):'—';
 }
 function fbLog(d){
-  const el=$('fblog');if(!d)return;
+  const el=$('fblog'); if(!d) return;
   const line=(txt,cl)=>{const div=document.createElement('div');
     div.innerHTML=`<span class="ts">${new Date().toLocaleTimeString('en-GB')}</span><span class="${cl}">${txt}</span>`;el.prepend(div);
-    while(el.children.length>120)el.lastElementChild.remove();};
-  if(d.__line)line(d.__line,'');
-  else if(d.error)line('⚠ '+d.error,'lv-err');
-  else if(d.count!=null)line('✓ '+d.count+' campaigns loaded','lv-buy');
-  else if(d.success)line('✓ '+d.status,'lv-buy');
-  else if(d.new_budget_usd)line('✓ scaled '+d.name+' → $'+d.new_budget_usd,'lv-buy');
+    while(el.children.length>120)el.lastElementChild.remove()};
+  if(d.__line) line(d.__line,'');
+  else if(d.error) line('⚠ '+d.error,'lv-err');
+  else if(d.count!=null) line('✓ '+d.count+' campaigns loaded','lv-buy');
+  else if(d.success) line('✓ '+d.status,'lv-buy');
+  else if(d.new_budget_usd) line('✓ scaled '+d.name+' → $'+d.new_budget_usd,'lv-buy');
   else line(JSON.stringify(d),'');
 }
 
 /* ================= AUTO TRADE ================= */
-let TLAST=0,TRUN=false;
-let EQHIST=loadEq(); /* [{t,eq}] from localStorage */
-function loadEq(){try{const j=localStorage.getItem('pb_eq');const a=j?JSON.parse(j):[];
-  if(!Array.isArray(a))return[];return a;}catch(e){return[];}}
-function saveEq(){try{localStorage.setItem('pb_eq',JSON.stringify(EQHIST.slice(-400)));}catch(e){}}
+let TLAST=0, TRUN=false;
+let EQHIST=loadEq();
+function loadEq(){try{const j=localStorage.getItem('pb_eq');const a=j?JSON.parse(j):[];return Array.isArray(a)?a:[]}catch(e){return[]}}
+function saveEq(){try{localStorage.setItem('pb_eq',JSON.stringify(EQHIST.slice(-400)))}catch(e){}}
 
 function handleToggleMode(e){
-  const b=e.target.closest('button');if(!b)return;
+  const b=e.target.closest('button'); if(!b) return;
   const real=b.dataset.v==='real';
   document.querySelectorAll('#tmode_sel button').forEach(x=>x.classList.toggle('on',x===b));
   $('trealwarn').classList.toggle('hidden',!real);
-  $('tmodhint').textContent=real?'REAL funds — orders land on Binance. Only enable when you intend to trade live.':
-    'virtual wallet — no real money moves, perfect for strategy experimentation';
+  $('tmodhint').textContent=real?'Real funds, orders land on Binance. Only enable when you intend to trade live.':
+    'virtual wallet, no real money moves, perfect for strategy experimentation';
 }
-document.getElementById('tmode_sel').addEventListener('click',handleToggleMode);
+$('tmode_sel').addEventListener('click',handleToggleMode);
 
 async function toggleEngine(){
   if(TRUN){
@@ -996,53 +993,50 @@ async function toggleEngine(){
     $('confirmline').classList.remove('hidden');
   }else{
     const real=$('tmode_sel').querySelector('button.on').dataset.v==='real';
-    if(real&&!confirm('REAL TRADING: এই switch-টা আসল Binance account-এ order দেবে। নিশ্চিত?'))return;
+    if(real&&!confirm('REAL TRADING: এই switch-টা আসল Binance account-এ order দেবে। নিশ্চিত?')) return;
     $('cfmsg').textContent='Starting engine…';
     await tradeStart();
   }
 }
 async function confirmStop(go){
   $('confirmline').classList.add('hidden');
-  if(go){await api('/trade/stop',{method:'POST'});logLine('STOP SWITCH PRESSED','lv-warn');}
-  TRUN=false;TLAST=0;
+  if(go){await api('/trade/stop',{method:'POST'});logLine('STOP SWITCH PRESSED','lv-warn')}
+  TRUN=false; TLAST=0;
   tradeRefresh();
 }
 async function tradeStart(){
   const real=$('tmode_sel').querySelector('button.on').dataset.v==='real';
-  if(real&&!confirm('Are you sure — live funds? Start REAL trading?'))return;
-  const dirty=false;
+  if(real&&!confirm('Are you sure, live funds? Start REAL trading?')) return;
   const body={mode:real?'real':'paper',symbols:$('tsyms').value,
     interval:$('tint').value,scan_every:parseFloat($('tscan').value)||60,
     notional:parseFloat($('tsize').value)||10,
     sl_percent:$('tsl').value||null,tp_percent:$('ttp').value||null};
-  if(real)body.real_confirm='YES';
+  if(real) body.real_confirm='YES';
   const d=await api('/trade/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(d&&d.error){alert(d.error);logLine('❌ '+d.error,'lv-err');return;}
-  TLAST=0;tradeRefresh();
+  if(d&&d.error){alert(d.error);logLine('❌ '+d.error,'lv-err'); return}
+  TLAST=0; tradeRefresh();
 }
 
 function logLine(txt,cl){
-  const el=$('tlog');const div=document.createElement('div');
+  const el=$('tlog'); const div=document.createElement('div');
   div.innerHTML=`<span class="ts">${new Date().toLocaleTimeString('en-GB')}</span><span class="${cl||''}">${txt}</span>`;
-  el.prepend(div);while(el.children.length>200)el.lastElementChild.remove();
+  el.prepend(div); while(el.children.length>200) el.lastElementChild.remove();
 }
 
 let LASTEQ_TS=0;
 async function tradeRefresh(){
-  const d=await api('/trade/status');if(!d)return;
+  const d=await api('/trade/status'); if(!d) return;
   TRUN=d.state==='running';
-  // engine state
   $('engState').textContent=TRUN?'Running':'Stopped';
   $('engDot').className=TRUN?'live':'';
   $('engCard').classList.toggle('live',TRUN);
-  const tog=$('toggle');tog.classList.toggle('on',TRUN);
+  const tog=$('toggle'); tog.classList.toggle('on',TRUN);
   tog.setAttribute('aria-checked',TRUN);
   $('sideMode').textContent=TRUN?'running':'stopped';
-  $('tmode').textContent=(d.mode||'paper').toUpperCase();
+  $('tmode').textContent=(d.mode||'paper').charAt(0).toUpperCase()+(d.mode||'paper').slice(1);
   $('tmode').className='pill '+(d.mode==='real'?'real':'paper');
   $('tlast').textContent=dtfmt(d.last_scan);
   $('tcoins').innerHTML=(d.symbols||[]).map(s=>`<span class="pcoin">${s}</span>`).join('')||'<span class="mini">none</span>';
-  // hero
   $('teq').textContent='$'+fmt(d.equity);
   $('tstarted').textContent='started at $'+fmt(d.start_equity)+' ('+pnl(d.total_pnl_pct)+'%)';
   $('ttoday').innerHTML=d.today_pnl>=0?'+$'+fmt(d.today_pnl):'$'+fmt(d.today_pnl);
@@ -1056,21 +1050,19 @@ async function tradeRefresh(){
   $('ttr').textContent=st.trades+' trades · '+st.wins+'W/'+st.losses+'L';
   $('st_trades').textContent=st.trades; $('st_wins').textContent=st.wins; $('st_losses').textContent=st.losses;
   $('st_avg').textContent='$'+fmt(st.avg_win)+' / $'+fmt(st.avg_loss);
-  // positions
-  const ptb=$('tpos');ptb.innerHTML='';
+  const ptb=$('tpos'); ptb.innerHTML='';
   const inv=(d.invested_pct||0);
-  if(!(d.positions||[]).length){ptb.innerHTML='<tr><td colspan="8" class="empty-state"><b>No open positions</b><br><span class="mini">start the engine — it buys when a BUY signal appears and on SL/TP it closes</span></td></tr>';}
+  if(!(d.positions||[]).length){ptb.innerHTML='<tr><td colspan="8" class="empty-state"><b>No open positions</b><br><span class="mini">start the engine, it buys when a BUY signal appears and on SL/TP it closes</span></td></tr>';}
   (d.positions||[]).forEach(p=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td class="sym"><b>${p.symbol}</b></td><td>${fmt(p.qty,6)}</td><td>$${fmt(p.entry)}</td>
       <td>$${fmt(p.last)}</td><td>$${fmt(p.value)}</td><td>${p.pct}%</td>
       <td class="${pnlCls(p.pnl)}">${pnl(p.pnl)} (${p.pnl_pct>0?'+':''}${p.pnl_pct}%)</td><td></td>`;
-    const td=tr.lastElementChild;const cv=document.createElement('canvas');cv.className='spark';cv.style.width='92px';
-    td.appendChild(cv);requestAnimationFrame(()=>spark(cv,pseudoWalk(p.symbol,20,p.last),p.pnl>=0?'#3FBF8F':'#E0645A'));
+    const td=tr.lastElementChild; const cv=document.createElement('canvas'); cv.className='spark'; cv.style.width='92px';
+    td.appendChild(cv); requestAnimationFrame(()=>spark(cv,pseudoWalk(p.symbol,20,p.last),p.pnl>=0?'#3FBF8F':'#E0645A'));
     ptb.appendChild(tr);});
   $('tpossub').textContent=inv+'% of equity allocated';
-  // closed trades
-  const ttb=$('ttr');ttb.innerHTML='';
+  const ttb=$('ttr'); ttb.innerHTML='';
   if(!(d.trades||[]).length){ttb.innerHTML='<tr><td colspan="8" class="empty-state"><b>No closed trades yet</b><br><span class="mini">closed positions land here with realised P&amp;L</span></td></tr>';}
   (d.trades||[]).forEach(t=>{
     ttb.insertAdjacentHTML('beforeend',
@@ -1079,41 +1071,37 @@ async function tradeRefresh(){
        <td class="${pnlCls(t.pnl)}">${pnl(t.pnl)}</td><td class="${pnlCls(t.pnl)}">${t.pnl_pct>0?'+':''}${t.pnl_pct}%</td>
        <td class="mut">${t.reason||'—'}</td></tr>`);
   });
-  // equity sampling (1/min) + incremental log
   const now=Date.now();
-  if(TRUN&&now-LASTEQ_TS>30000){EQHIST.push({t:Math.floor(now/1000),eq:d.equity||0});saveEq();LASTEQ_TS=now;$('eqtag').textContent='live · '+(EQHIST.length||0)+' samples';}
+  if(TRUN&&now-LASTEQ_TS>30000){EQHIST.push({t:Math.floor(now/1000),eq:d.equity||0});saveEq();LASTEQ_TS=now;$('eqtag').textContent='live · '+(EQHIST.length||0)+' samples'}
   const l=await api('/trade/log?since='+TLAST);
   if(l&&(l.logs||l.entries)){
     const arr=l.logs||l.entries;
     arr.forEach(e=>{
       const cl=e.level==='buy'?'lv-buy':e.level==='sell'?'lv-buy':e.level==='error'?'lv-err':e.level==='warn'?'lv-warn':'';
-      logLine(e.msg||e.msq,cl);
+      logLine(e.msg,cl);
     });
-    const last=arr[arr.length-1];if(last&&last.ts)TLAST=Math.max(TLAST,last.ts);
+    const last=arr[arr.length-1]; if(last&&last.ts) TLAST=Math.max(TLAST,last.ts);
   }
   drawAnalytics();
 }
 
 function drawAnalytics(){
-  // equity curve
   let series=EQHIST.map(s=>({t:s.t,y:s.eq}));
   if(series.length<2){
     const base=parseFloat(($('teq').textContent||'0').replace(/[^0-9.]/g,''))||1000;
-    const demo=[];let v=base*0.992;for(let i=40;i>=0;i--){v*=1+(Math.sin(i/4)*0.004)+0.0012;demo.push({t:i*3600,y:v});}
+    const demo=[]; let v=base*0.992; for(let i=40;i>=0;i--){v*=1+(Math.sin(i/4)*0.004)+0.0012;demo.push({t:i*3600,y:v})}
     series=demo.map(s=>({t:s.t,y:Math.round(s.y*100)/100}));
-    $('eqtag').textContent='demo view — live samples appear once running';
-  }else{$('eqtag').textContent=(series.length||0)+' live samples'+((Math.floor(Date.now()/1000)-series[series.length-1].t>180)?' (engine idle)':'');}
+    $('eqtag').textContent='demo view, live samples appear once running';
+  }else{$('eqtag').textContent=(series.length||0)+' live samples'+((Math.floor(Date.now()/1000)-series[series.length-1].t>180)?' (engine idle)':'')}
   drawLineSeries('eqCurve',series,'#C4A467',true);
-  // donut
-  const st=(window._st||{});let w=0,l=0;
-  try{const r=$('st_wins').textContent,w2=parseInt(r)||0;const l2=parseInt($('st_losses').textContent)||0;w=w2;l=l2;}catch(e){}
+  let w=0,l=0;
+  try{w=parseInt($('st_wins').textContent)||0;l=parseInt($('st_losses').textContent)||0}catch(e){}
   drawDonut('donut',w||0,l||0);
-  // pnl by day
   const byDay=(function(){
     if(EQHIST.length>1){
-      const m={};let prev=null;
+      const m={}; let prev=null;
       EQHIST.forEach(s=>{const d=new Date(s.t*1000).toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit'});
-        if(prev)m[d]=(s.eq-prev.eq);prev=s.eq;});
+        if(prev) m[d]=(s.eq-prev.eq); prev=s.eq});
       const keys=Object.keys(m).slice(-6);
       return keys.map(k=>({lb:k,v:Math.round(m[k])}));
     }
@@ -1124,12 +1112,12 @@ function drawAnalytics(){
 
 /* ================= INIT ================= */
 fetchMarket(true);
-setInterval(()=>{if(!$('market').classList.contains('hidden'))fetchMarket(true);},30000);
-setInterval(()=>{if(!$('alerts').classList.contains('hidden'))checkAlerts();},45000);
-setInterval(()=>{if(!$('trade').classList.contains('hidden'))tradeRefresh();},3000);
-setInterval(()=>{if($('trade').classList.contains('hidden'))drawAnalytics();},15000);
+setInterval(()=>{if(!$('market').classList.contains('hidden'))fetchMarket(true)},30000);
+setInterval(()=>{if(!$('alerts').classList.contains('hidden'))checkAlerts()},45000);
+setInterval(()=>{if(!$('trade').classList.contains('hidden'))tradeRefresh()},3000);
+setInterval(()=>{if($('trade').classList.contains('hidden'))drawAnalytics()},15000);
 window.addEventListener('resize',()=>{if(!$('chart').classList.contains('hidden'))loadChart();
-  if(!$('market').classList.contains('hidden'))renderMarket();});
+  if(!$('market').classList.contains('hidden'))renderMarket()});
 show('market');
 </script>
 </body>
